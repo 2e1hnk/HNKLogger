@@ -1,0 +1,1 @@
+/home/matt/workspace/HNKLogger/lib/charva/c/lib/libTerminal.so

@@ -1,0 +1,43 @@
+<contest>
+<contestInformation>
+	<contestName></contestName>
+	<rulesUrl></rulesUrl>
+</contestInformation>
+<scoring>
+	<contact>
+		<rule post="stop">
+			<field>callsign</field>
+			<operator>ends</operator>
+			<value>/P</value>
+			<points>5</points>
+		</rule>
+		<rule post="stop">
+			<field>callsign</field>
+			<operator>ends</operator>
+			<value>/M</value>
+			<points>5</points>
+		</rule>
+		<rule post="stop">
+			<field>region</field>
+			<operator>equals</operator>
+			<value>1</value>
+			<points>2</points>
+		</rule>
+		<rule post="stop">
+			<field>region</field>
+			<operator>notequal</operator>
+			<value>1</value>
+			<points>3</points>
+		</rule>
+	</contact>
+	<multiplier>
+		<rule>
+			<fields>
+				<field>dxcc</field>
+				<field>band</field>
+			</fields>
+			<points>1</points>
+		</rule>
+	</multiplier>
+</scoring>
+</contest>
