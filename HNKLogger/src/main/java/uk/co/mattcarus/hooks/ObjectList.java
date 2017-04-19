@@ -83,8 +83,12 @@ public class ObjectList<T> implements Iterable<T>, Iterator<T> {
 		{
 			Method runMethod;
 			try {
-				runMethod = object.getClass().getMethod(methodName, new Class[]{data.getClass()});
+				runMethod = object.getClass().getMethod(methodName, data.getClass());
 				runMethod.invoke(object, data);
+			}
+			catch (NoSuchMethodException e)
+			{
+				System.out.println("Hook " + object.getClass().getName() + " does not implement method " + methodName + "(" + data.getClass() + ") and that's OK.");
 			}
 			catch (Exception e)
 			{

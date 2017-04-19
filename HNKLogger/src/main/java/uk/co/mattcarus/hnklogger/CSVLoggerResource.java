@@ -66,12 +66,12 @@ public class CSVLoggerResource implements LoggerResource {
 				for ( int i = 0; i < csvLine.length; i++ )
 				{
 					csvLineProcessed.put(this.resourceKeys.get(i), this.stripQuotes(csvLine[i]));
-					System.out.print(this.resourceKeys.get(i) + " : " + this.stripQuotes(csvLine[i]) + ", ");
+					//System.out.print(this.resourceKeys.get(i) + " : " + this.stripQuotes(csvLine[i]) + ", ");
 				}
 				
 				this.resource.put(this.stripQuotes(csvLine[0]), csvLineProcessed);
 				
-				System.out.print("\n");
+				//System.out.print("\n");
 			}
 
 		} catch (FileNotFoundException e) {

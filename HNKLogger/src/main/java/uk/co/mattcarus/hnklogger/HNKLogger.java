@@ -19,6 +19,10 @@ public class HNKLogger {
 	
 	public HNKLogger()
 	{
+		// Set system proxies
+	    System.setProperty ("http.proxyHost", "black-barracuda.black.ndr");
+	    System.setProperty ("http.proxyPort", "3128");
+	    
 		// Load properties
 		/*
 		try {
@@ -63,8 +67,9 @@ public class HNKLogger {
 	{
 		hooks = new ObjectList<Hook>();
 		
-		hooks.add( new PostToWebAddress() );
-		hooks.add( new DxCluster() );
+		//hooks.add( new PostToWebAddress() );
+		hooks.add( new Clock() );
+		hooks.add( new QRZLookup() );
 		HNKLogger.hooks.run("init");
 	}
 	
