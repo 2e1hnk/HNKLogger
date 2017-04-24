@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 import uk.co.mattcarus.hnklogger.Contact;
 
-public class PostToWebAddress extends Hook {
+public class PostToWebAddress extends Plugin {
 	
 	public String name = "change me";
 	

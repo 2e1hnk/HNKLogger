@@ -3,12 +3,12 @@ package uk.co.mattcarus.hnklogger.plugin;
 import uk.co.mattcarus.hnklogger.Contact;
 import uk.co.mattcarus.hnklogger.gui.HNKLoggerGUI;
 
-public class Hook {
-	public String name = "change me";
+public class Plugin {
+	public static String name = "change me";
 	
 	public String getName()
 	{
-		return this.name;
+		return Plugin.name;
 	}
 	
 	public void init() {

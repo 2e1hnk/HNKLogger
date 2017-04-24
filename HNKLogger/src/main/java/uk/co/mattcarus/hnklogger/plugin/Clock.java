@@ -2,36 +2,65 @@ package uk.co.mattcarus.hnklogger.plugin;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import javax.swing.JFrame;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
 import uk.co.mattcarus.hnklogger.gui.SwingGUI;
 
-public class Clock extends Hook {
-	public String name = "Clock";
+public class Clock extends Plugin {
+	public static String name = "Clock";
 	
 	public String getName() {
-		return this.name;
+		return Clock.name;
 	}
 	
 	public void initGUI(SwingGUI gui) throws Exception {
         SwingUtilities.invokeLater(new Runnable() {
         public void run() {
-            final JFrame clockFrame = new JFrame("clock");
-            final JTextArea clockTextArea = new JTextArea(10,30);
-            clockFrame.add(clockTextArea);
+            final JFrame clockFrame = new JFrame(Clock.name);
+            final JTextPane clockTextPane = new JTextPane();
+            final StyledDocument doc = (StyledDocument) clockTextPane.getDocument();
+            
+            final SimpleAttributeSet normal = new SimpleAttributeSet();
+            StyleConstants.setFontFamily(normal, "SansSerif");
+            StyleConstants.setFontSize(normal, 16);
+
+            try {
+				doc.insertString(doc.getLength(), "00:00\n", normal);
+			} catch (BadLocationException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+            
+            clockFrame.add(clockTextPane);
+            clockFrame.pack();
+            clockFrame.setLocationRelativeTo(null);
             clockFrame.setVisible(true);
             
-            clockTextArea.setText("00:00");
+            final SimpleDateFormat dateFormatGmt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+            dateFormatGmt.setTimeZone(TimeZone.getTimeZone("GMT"));
             
             Timer t = new Timer(1000, new ActionListener(){
             	  public void actionPerformed(ActionEvent e) {
-            	      clockTextArea.setText(new Date().toString());
-            	      clockFrame.pack();
+						try {
+							clockTextPane.setText("");
+							doc.insertString(0, dateFormatGmt.format(new Date()), normal);
+							clockFrame.pack();
+						} catch (BadLocationException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
             	  }
             });
             t.start();

@@ -14,7 +14,7 @@ public class HNKLogger {
 	int nextSerial = 0;
 	public static LoggerResource loggerResource;
 	
-	public static ObjectList<Hook> hooks;
+	public static ObjectList<Plugin> hooks;
 	
 	
 	public HNKLogger()
@@ -65,7 +65,7 @@ public class HNKLogger {
 	
 	public void loadHooks()
 	{
-		hooks = new ObjectList<Hook>();
+		hooks = new ObjectList<Plugin>();
 		
 		//hooks.add( new PostToWebAddress() );
 		hooks.add( new Clock() );

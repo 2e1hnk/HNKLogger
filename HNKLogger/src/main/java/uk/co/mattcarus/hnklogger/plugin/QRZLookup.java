@@ -33,7 +33,7 @@ import com.sun.jersey.api.client.config.ClientConfig;
 
 import uk.co.mattcarus.hnklogger.Contact;
 
-public class QRZLookup extends Hook {
+public class QRZLookup extends Plugin {
 	
 	public String name = "QRZ.com Lookup";
 	private String qrz_agent = "HNKLoggerV0.1";
