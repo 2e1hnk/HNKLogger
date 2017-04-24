@@ -1,4 +1,4 @@
-package uk.co.mattcarus.hooks;
+package uk.co.mattcarus.hnklogger.plugin;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

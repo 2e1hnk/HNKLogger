@@ -1,4 +1,4 @@
-package uk.co.mattcarus.hooks;
+package uk.co.mattcarus.hnklogger.plugin;
 
 import uk.co.mattcarus.hnklogger.Contact;
 import uk.co.mattcarus.hnklogger.gui.HNKLoggerGUI;

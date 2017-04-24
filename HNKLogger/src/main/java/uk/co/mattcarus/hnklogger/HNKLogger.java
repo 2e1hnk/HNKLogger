@@ -3,7 +3,7 @@ package uk.co.mattcarus.hnklogger;
 import javax.swing.SwingUtilities;
 
 import uk.co.mattcarus.hnklogger.gui.*;
-import uk.co.mattcarus.hooks.*;
+import uk.co.mattcarus.hnklogger.plugin.*;
 
 import com.googlecode.lanterna.*;
 import com.googlecode.lanterna.gui.*;

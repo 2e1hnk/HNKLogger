@@ -1,4 +1,4 @@
-package uk.co.mattcarus.hooks;
+package uk.co.mattcarus.hnklogger.plugin;
 
 import java.io.IOException;
 import java.io.StringReader;
