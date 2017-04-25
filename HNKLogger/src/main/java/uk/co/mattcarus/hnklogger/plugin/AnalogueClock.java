@@ -66,13 +66,14 @@ class AnalogueClockPanel extends JPanel implements Runnable {
 	  int xHandSec, yHandSec, xHandMin, yHandMin, xHandHour, yHandHour;
 
 	  /** The size of the clock. */
-	  private final int HORIZONTAL_SIZE = 500;
-	  private final int VERTICAL_SIZE = 500;
+	  private final int HORIZONTAL_SIZE = 200;
+	  private final int VERTICAL_SIZE = 200;
 
 	  /** The length of the clock hands relative to the clock size. */
-	  private final int secondHandLength = HORIZONTAL_SIZE / 2 - 50;
-	  private final int minuteHandLength = HORIZONTAL_SIZE / 2 - 70;
-	  private final int hourHandLength = HORIZONTAL_SIZE / 2 - 100;
+	  //private final int secondHandLength = (int) (HORIZONTAL_SIZE * 0.3);
+	  private final int secondHandLength = 0;
+	  private final int minuteHandLength = (int) (HORIZONTAL_SIZE * 0.25);
+	  private final int hourHandLength = (int) (HORIZONTAL_SIZE * 0.15);
 
 	  /** The distance of the dots from the origin (center of the clock). */
 	  private final int DISTANCE_DOT_FROM_ORIGIN = HORIZONTAL_SIZE / 2 - 40;
@@ -140,7 +141,7 @@ class AnalogueClockPanel extends JPanel implements Runnable {
 	    for (int i = 0; i < 60; i++) {
 	      
 	      Point dotCoordinates = minToLocation(i, DISTANCE_DOT_FROM_ORIGIN);
-	      g2.setColor((i <= Calendar.getInstance().get(Calendar.SECOND)) ? Color.white : GREY_COLOR);
+	      g2.setColor((i <= Calendar.getInstance().get(Calendar.SECOND)) ? Color.red : GREY_COLOR);
 	      
 	      if (i % 5 == 0) {
 	        // big dot
