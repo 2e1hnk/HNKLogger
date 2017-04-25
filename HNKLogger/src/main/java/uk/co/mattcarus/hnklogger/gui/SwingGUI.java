@@ -228,6 +228,24 @@ public class SwingGUI extends JFrame implements HNKLoggerGUI {
 			}
 		});
 		
+		fldCallsign.addFocusListener(new FocusListener() {
+
+			@Override
+			public void focusGained(FocusEvent e) {
+				// Nothing to do here
+			}
+
+			@Override
+			public void focusLost(FocusEvent e) {
+				// Trigger Plugins
+				if ( !e.isTemporary() && !fldCallsign.equals("") ) {
+					System.out.println("Running onCallsignEntered Hook with: " + fldCallsign.getText());
+					HNKLogger.hooks.run("onCallsignEntered", fldCallsign.getText());
+				}
+			}
+			
+		});
+		
 		fldRptSent.addFocusListener(new FocusListener() {
 
 			@Override

@@ -1,6 +1,9 @@
 package uk.co.mattcarus.hnklogger;
 
 import java.util.*;
+
+import uk.co.mattcarus.hnklogger.exceptions.HNKPropertyNotFoundException;
+
 import java.io.*;
 
 public class HNKLoggerProperties {
@@ -8,13 +11,12 @@ public class HNKLoggerProperties {
 	String result = "";
 	InputStream inputStream;
  
-	public HNKLoggerProperties() throws IOException {
+	public HNKLoggerProperties(String propFileName) throws IOException {
  
 		try {
 			properties = new Properties();
-			String propFileName = "config.properties";
- 
-			inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
+			
+			inputStream = new FileInputStream(propFileName);
  
 			if (inputStream != null) {
 				properties.load(inputStream);
@@ -31,6 +33,21 @@ public class HNKLoggerProperties {
 	public Properties getProperties()
 	{
 		return this.properties;
+	}
+	
+	public String getProperty(String propertyName) throws HNKPropertyNotFoundException
+	{
+		try {
+			return this.getProperties().getProperty(propertyName);
+		}
+		catch (NullPointerException e) {
+			throw new HNKPropertyNotFoundException();
+		}
+	}
+	
+	public int getPropertyAsInt(String propertyName) throws HNKPropertyNotFoundException
+	{
+		return Integer.parseInt(this.getProperty(propertyName));
 	}
 }
 

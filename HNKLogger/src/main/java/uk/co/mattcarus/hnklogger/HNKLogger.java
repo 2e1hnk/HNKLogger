@@ -1,7 +1,13 @@
 package uk.co.mattcarus.hnklogger;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 import javax.swing.SwingUtilities;
 
+import uk.co.mattcarus.hnklogger.exceptions.HNKPropertyNotFoundException;
 import uk.co.mattcarus.hnklogger.gui.*;
 import uk.co.mattcarus.hnklogger.plugin.*;
 
@@ -24,15 +30,15 @@ public class HNKLogger {
 	    System.setProperty ("http.proxyPort", "3128");
 	    
 		// Load properties
-		/*
+		
 		try {
-			properties = new HNKLoggerProperties();
+			properties = new HNKLoggerProperties("config.properties");
 			System.out.println(properties.getProperties().getProperty("gui.interface_type"));
 		}
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-		*/
+		
 		
 		this.loadResources();
 		this.loadHooks();
@@ -42,16 +48,24 @@ public class HNKLogger {
 		
 		HNKLoggerGUI gui;
 		
-		//if ( properties.getProperties().getProperty("gui.interface_type").equals("LanternaGUI") )
-		//{
-			//gui = new LanternaGUI();
-		//}
-		//else
-		//{
+		try {
+			if ( properties.getProperty("gui.interface_type").equals("LanternaGUI") )
+			{
+				gui = new LanternaGUI();
+			}
+			else
+			{
+				// Swing is default
+				gui = new SwingGUI();
+			}
+		}
+		catch (Exception e) {
 			// Swing is default
 			gui = new SwingGUI();
-		//}
+		}
+		
 		this.loadGUI(gui);
+		HNKLogger.hooks.run("initProperties", properties);
 		HNKLogger.hooks.run("initGUI", gui);
 		
 		System.out.println(loggerResource.search("M0SPF").get("country"));
@@ -70,44 +84,21 @@ public class HNKLogger {
 		//hooks.add( new PostToWebAddress() );
 		hooks.add( new Clock() );
 		hooks.add( new QRZLookup() );
+		hooks.add( new AnalogueClock() );
+		
 		HNKLogger.hooks.run("init");
 	}
 	
 	public static void main(String[] args)
 	{
-		/*
-		 * Swing version
-		 *
-		 */
-		/*
-	    // Run GUI codes in Event-Dispatching thread for thread-safety
-	    SwingUtilities.invokeLater(new Runnable() {
-	         @Override
-	         public void run() {
-	            new HNKLogger();  // Let the constructor do the job
-	         }
-	    });
-	    */
-		
-		/*
-		 * Console Version
-		 */
-		
-		
-		
 		HNKLogger hnkLogger = new HNKLogger();
-		
-		HNKLoggerGUI gui = new LanternaGUI();
-		
+		//HNKLoggerGUI gui = new LanternaGUI();
 		//hnkLogger.loadGUI(gui);
-	    
 	    //textGUI.getScreen().stopScreen();
-		
 	}
 	
 	public void loadResources()
 	{
 		loggerResource = new CSVLoggerResource("cqwwpre3.txt");
-		
 	}
 }

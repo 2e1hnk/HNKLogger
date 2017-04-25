@@ -101,12 +101,12 @@ public class ObjectList<T> implements Iterable<T>, Iterator<T> {
 	
 	public String run(String methodName, String data)
 	{
-		return (String) this.run(methodName, data);
+		return (String) this.run(methodName, (Object) data);
 	}
 	
 	public Integer run(String methodName, Integer data)
 	{
-		return (Integer) this.run(methodName, data);
+		return (Integer) this.run(methodName, (Object) data);
 	}
 
 }

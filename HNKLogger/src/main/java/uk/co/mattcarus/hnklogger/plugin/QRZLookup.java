@@ -1,15 +1,20 @@
 package uk.co.mattcarus.hnklogger.plugin;
 
-import java.io.IOException;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Iterator;
 
+import javax.swing.JFrame;
+import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.ws.rs.core.MediaType;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -17,6 +22,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathException;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
@@ -24,55 +30,74 @@ import javax.xml.xpath.XPathFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.client.config.ClientConfig;
 
-import uk.co.mattcarus.hnklogger.Contact;
+import uk.co.mattcarus.hnklogger.HNKLoggerProperties;
+import uk.co.mattcarus.hnklogger.exceptions.HNKPropertyNotFoundException;
+import uk.co.mattcarus.hnklogger.gui.SwingGUI;
 
-public class QRZLookup extends Plugin {
+public class QRZLookup extends Plugin implements Runnable {
 	
 	public String name = "QRZ.com Lookup";
+	private String identifier = "qrzlookup";
+
+	private HNKLoggerProperties properties;
+	
 	private String qrz_agent = "HNKLoggerV0.1";
 	private String qrz_url = "http://xmldata.qrz.com/xml/current/";
 	
-	private String sessionKey = "53166f3ffdf711bb81d423b78145ed15";
+	private String sessionKey = "";
 	private Client client;
 	private String qrz_username = "2E1HNK";
 	private String qrz_password = "Suwr1sp1";
-	
+
+    private JFrame infoFrame;
+    private JTextPane infoTextPane;
+
 	public void init()
 	{
 		this.client = Client.create();
 		this.getSessionKey();
 	}
 	
-	public Contact onBeforeLogContact(Contact contact)
+	public void initProperties(HNKLoggerProperties properties)
 	{
-		System.out.println("Processing QRZ Hook");
-		WebResource webResource = client.resource(this.getLookupUrl(contact.getCallsign()));
-		ClientResponse response = webResource.accept(MediaType.APPLICATION_XML_TYPE).get(ClientResponse.class);
-		
-		if (response.getStatus() != 200) {
-		   throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
-		}
-		
-		Document output = response.getEntity(Document.class);
-		
+		this.properties = properties;
 		try {
-			Document qrzDocument = output;
+			this.qrz_username = this.properties.getProperty(this.getIdentifier() + ".username");
+			this.qrz_username = this.properties.getProperty(this.getIdentifier() + ".password");
+		}
+		catch (HNKPropertyNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public String onCallsignEntered(String callsign)
+	{
+		try {
+			String lookupUrl = this.getLookupUrl(callsign);
+			System.out.println("Processing QRZ Hook (using url: " + lookupUrl + ")");
+			WebResource webResource = client.resource(lookupUrl);
+			ClientResponse response = webResource.accept(MediaType.APPLICATION_XML_TYPE).get(ClientResponse.class);
+			
+			if (response.getStatus() != 200) {
+			   throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
+			}
+			
+			Document qrzDocument = response.getEntity(Document.class);
+			
 			System.out.println("QRZ login debug .... \n");
 			System.out.println(this.getXmlString(qrzDocument));
-			//this.sessionKey = this.getXmlValue(qrzDocument, "/ns:QRZDatabase/ns:Session/ns:Key");
-			//System.out.println("QRZ Session Key: " + this.sessionKey);
-		} catch (Exception e) {
+			this.updateInfoWindow(qrzDocument);
+		}
+		catch (Exception e)
+		{
 			e.printStackTrace();
-		}		
-
-		return contact;
+		}
+		return callsign;
 	}
 	
 	private void getSessionKey()
@@ -90,7 +115,7 @@ public class QRZLookup extends Plugin {
 			Document qrzLoginDocument = output;
 			System.out.println("QRZ login debug .... \n");
 			System.out.println(this.getXmlString(qrzLoginDocument));
-//			this.sessionKey = this.getXmlValue(qrzLoginDocument, "/ns:QRZDatabase/ns:Session/ns:Key");
+			this.sessionKey = this.getXmlValue(qrzLoginDocument, "/ns:QRZDatabase/ns:Session/ns:Key/text()");
 			System.out.println("QRZ Session Key: " + this.sessionKey);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -130,13 +155,28 @@ public class QRZLookup extends Plugin {
 		}
 	}
 	
-	private String getXmlValue(Document xmlDocument, String xPathString) throws XPathExpressionException
+	@SuppressWarnings("finally")
+	private String getXmlValue(Document xmlDocument, String xPathString)
 	{
-		XPath xPath = XPathFactory.newInstance().newXPath();
-		xPath.setNamespaceContext(new QRZNamespaceContext());
-		XPathExpression expr = xPath.compile(xPathString);
-        Node node = (Node) expr.evaluate(xmlDocument, XPathConstants.NODE);
-        return node.getNodeValue();
+		String retValue = "";
+		try {
+			XPath xPath = XPathFactory.newInstance().newXPath();
+			xPath.setNamespaceContext(new QRZNamespaceContext());
+			XPathExpression expr = xPath.compile(xPathString);
+	        Node node = (Node) expr.evaluate(xmlDocument, XPathConstants.NODE);
+	        retValue = node.getNodeValue();
+		}
+		catch ( XPathExpressionException e )
+		{
+			//throw new XPathExpressionException(e.toString());
+		}
+		catch ( NullPointerException e )
+		{
+			// Node doesn't exist, don't do anything
+		}
+		finally {
+			return retValue;
+		}
 	}
 	
     private static class QRZNamespaceContext implements NamespaceContext {
@@ -157,4 +197,49 @@ public class QRZLookup extends Plugin {
         }
 
     }
+    
+	public void initGUI(SwingGUI gui) {
+        SwingUtilities.invokeLater(this);
+	}
+
+
+	@Override
+	public void run() {
+	    infoFrame = new JFrame(this.getName());
+	    infoTextPane = new JTextPane();
+	    
+	    infoFrame.add(infoTextPane);
+	    infoFrame.pack();
+	    infoFrame.setLocationRelativeTo(null);
+        infoFrame.setVisible(true);
+	    
+        Timer t = new Timer(1000, new ActionListener(){
+      	    public void actionPerformed(ActionEvent e) {
+				// Do nothing, this just keeps the window open
+      	    }
+        });
+        t.start();
+	}
+	
+	private void updateInfoWindow(String contents)
+	{
+		infoTextPane.setText(contents);
+		infoFrame.pack();
+	}
+
+	private void updateInfoWindow(Document qrzDocument) throws XPathException
+	{
+		StringBuilder sb = new StringBuilder();
+		sb.append(this.getXmlValue(qrzDocument, "/ns:QRZDatabase/ns:Callsign/ns:fname/text()"));
+		sb.append(" ");
+		sb.append(this.getXmlValue(qrzDocument, "/ns:QRZDatabase/ns:Callsign/ns:name/text()"));
+		sb.append("\n");
+		sb.append(this.getXmlValue(qrzDocument, "/ns:QRZDatabase/ns:Callsign/ns:addr2/text()"));
+		sb.append(", ");
+		sb.append(this.getXmlValue(qrzDocument, "/ns:QRZDatabase/ns:Callsign/ns:state/text()"));
+		sb.append(", ");
+		sb.append(this.getXmlValue(qrzDocument, "/ns:QRZDatabase/ns:Callsign/ns:country/text()"));
+		
+		this.updateInfoWindow(sb.toString());
+	}
 }

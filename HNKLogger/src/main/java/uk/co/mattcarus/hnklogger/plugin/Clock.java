@@ -21,10 +21,6 @@ import uk.co.mattcarus.hnklogger.gui.SwingGUI;
 public class Clock extends Plugin {
 	public static String name = "Clock";
 	
-	public String getName() {
-		return Clock.name;
-	}
-	
 	public void initGUI(SwingGUI gui) throws Exception {
         SwingUtilities.invokeLater(new Runnable() {
         public void run() {
