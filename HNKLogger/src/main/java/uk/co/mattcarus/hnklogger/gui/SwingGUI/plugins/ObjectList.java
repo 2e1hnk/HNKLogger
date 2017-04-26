@@ -1,4 +1,4 @@
-package uk.co.mattcarus.hnklogger.plugin;
+package uk.co.mattcarus.hnklogger.gui.SwingGUI.plugins;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

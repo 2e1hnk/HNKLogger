@@ -1,4 +1,4 @@
-package uk.co.mattcarus.hnklogger.plugin;
+package uk.co.mattcarus.hnklogger.gui.SwingGUI.plugins;
 
 import java.io.BufferedReader;
 import uk.co.mattcarus.hnklogger.gui.HNKLoggerGUI;

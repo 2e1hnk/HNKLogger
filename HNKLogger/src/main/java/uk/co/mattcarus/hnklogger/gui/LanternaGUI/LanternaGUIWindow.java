@@ -1,4 +1,4 @@
-package uk.co.mattcarus.hnklogger.gui;
+package uk.co.mattcarus.hnklogger.gui.LanternaGUI;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

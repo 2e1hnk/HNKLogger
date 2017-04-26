@@ -1,5 +1,6 @@
-package uk.co.mattcarus.hnklogger.plugin;
+package uk.co.mattcarus.hnklogger.gui.SwingGUI.plugins;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -13,7 +14,7 @@ import javax.swing.JPanel;
 
 import uk.co.mattcarus.hnklogger.HNKLoggerProperties;
 import uk.co.mattcarus.hnklogger.exceptions.HNKPropertyNotFoundException;
-import uk.co.mattcarus.hnklogger.gui.SwingGUI;
+import uk.co.mattcarus.hnklogger.gui.SwingGUI.SwingGUI;
 
 public class AnalogueClock extends Plugin {
 	public static String name = "Analogue Clock";
@@ -160,6 +161,7 @@ class AnalogueClockPanel extends JPanel implements Runnable {
 
 	    // Draw the clock hands
 	    g2.setColor(Color.black);
+	    g2.setStroke(new BasicStroke(3));
 	    g2.drawLine(HORIZONTAL_SIZE / 2, VERTICAL_SIZE / 2, xHandSec, yHandSec);
 	    g2.drawLine(HORIZONTAL_SIZE / 2, VERTICAL_SIZE / 2, xHandMin, yHandMin);
 	    g2.drawLine(HORIZONTAL_SIZE / 2, VERTICAL_SIZE / 2, xHandHour, yHandHour);

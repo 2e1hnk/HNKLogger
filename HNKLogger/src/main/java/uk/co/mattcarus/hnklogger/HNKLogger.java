@@ -9,7 +9,9 @@ import javax.swing.SwingUtilities;
 
 import uk.co.mattcarus.hnklogger.exceptions.HNKPropertyNotFoundException;
 import uk.co.mattcarus.hnklogger.gui.*;
-import uk.co.mattcarus.hnklogger.plugin.*;
+import uk.co.mattcarus.hnklogger.gui.LanternaGUI.LanternaGUI;
+import uk.co.mattcarus.hnklogger.gui.SwingGUI.SwingGUI;
+import uk.co.mattcarus.hnklogger.gui.SwingGUI.plugins.*;
 
 import com.googlecode.lanterna.*;
 import com.googlecode.lanterna.gui.*;

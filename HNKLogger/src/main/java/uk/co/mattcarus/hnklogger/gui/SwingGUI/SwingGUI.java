@@ -1,4 +1,4 @@
-package uk.co.mattcarus.hnklogger.gui;
+package uk.co.mattcarus.hnklogger.gui.SwingGUI;
 
 import java.awt.Container;
 import java.awt.Dimension;
@@ -28,12 +28,15 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
@@ -45,6 +48,7 @@ import uk.co.mattcarus.hnklogger.TextPrompt;
 import uk.co.mattcarus.hnklogger.UppercaseDocumentFilter;
 import uk.co.mattcarus.hnklogger.Contest;
 import uk.co.mattcarus.hnklogger.contests.RsgbSsbFieldDay;
+import uk.co.mattcarus.hnklogger.gui.HNKLoggerGUI;
 
 public class SwingGUI extends JFrame implements HNKLoggerGUI {
 	Log log;
@@ -58,8 +62,10 @@ public class SwingGUI extends JFrame implements HNKLoggerGUI {
 	//JPanel statusPanel;
 	JPanel statsPanel;
 	
-	JScrollPane historyScrollPane;
-	JTextArea historyTextArea;
+	//JTextArea historyTextArea;
+	Object columnNames[] = { "Date/Time", "Serial", "Callsign", "Rpt Sent", "Rpt Rcvd" };
+    JTable historyTable = new JTable(new DefaultTableModel(columnNames, 0));
+    JScrollPane historyScrollPane;
 	
 	JLabel fldDate;
 	JLabel fldTime;
@@ -95,8 +101,7 @@ public class SwingGUI extends JFrame implements HNKLoggerGUI {
 		//statusPanel = new JPanel(new GridLayout());
 		statsPanel = new JPanel(new GridLayout());
 		
-		historyTextArea = new JTextArea(10,30);
-		historyScrollPane = new JScrollPane(historyTextArea);
+		historyScrollPane = new JScrollPane(historyTable);
 		historyScrollPane.setPreferredSize(new Dimension(850, 130));
 		
 		historyPanel.add(historyScrollPane);
@@ -125,8 +130,8 @@ public class SwingGUI extends JFrame implements HNKLoggerGUI {
 		DocumentFilter ucFilter = new UppercaseDocumentFilter();
 		((AbstractDocument) fldCallsign.getDocument()).setDocumentFilter(ucFilter);
 		
-		historyTextArea.setEditable(false);
-		historyTextArea.setFont(new Font("Courier New", Font.PLAIN, 14));
+		//historyTextArea.setEditable(false);
+		//historyTextArea.setFont(new Font("Courier New", Font.PLAIN, 14));
 		
 		//status.setSize(100, 20);
 		stats.setSize(100, 20);
@@ -402,7 +407,7 @@ public class SwingGUI extends JFrame implements HNKLoggerGUI {
 			@Override
 			public void componentResized(ComponentEvent e) {
 				// TODO Auto-generated method stub
-				historyTextArea.setSize(getBounds().width, historyTextArea.getSize().height);
+				//historyTextArea.setSize(getBounds().width, historyTextArea.getSize().height);
 				System.out.println("Window resized");
 			}
 
@@ -422,7 +427,14 @@ public class SwingGUI extends JFrame implements HNKLoggerGUI {
 	public void updateHistory()
 	{
 		// Update the table here
-		historyTextArea.setText(this.log.toString(100));
+		//historyTextArea.setText(this.log.toString(100));
+		DefaultTableModel model = (DefaultTableModel) historyTable.getModel();
+		for ( Contact contact : this.log.getContacts() )
+		{
+			model.addRow(new Object[]{ contact.getContactTimeFriendly(), contact.getSerial(), contact.getCallsign(), contact.getRptSent(), contact.getRptRcvd() });
+		}
+		JScrollBar historyVerticalScrollPane = historyScrollPane.getVerticalScrollBar();
+		historyVerticalScrollPane.setValue( historyVerticalScrollPane.getMaximum() );
 		
 	}
 	

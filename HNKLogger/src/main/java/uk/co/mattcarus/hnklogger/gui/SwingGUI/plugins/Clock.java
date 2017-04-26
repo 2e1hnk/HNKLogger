@@ -1,4 +1,4 @@
-package uk.co.mattcarus.hnklogger.plugin;
+package uk.co.mattcarus.hnklogger.gui.SwingGUI.plugins;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,7 +16,7 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-import uk.co.mattcarus.hnklogger.gui.SwingGUI;
+import uk.co.mattcarus.hnklogger.gui.SwingGUI.SwingGUI;
 
 public class Clock extends Plugin {
 	public static String name = "Clock";

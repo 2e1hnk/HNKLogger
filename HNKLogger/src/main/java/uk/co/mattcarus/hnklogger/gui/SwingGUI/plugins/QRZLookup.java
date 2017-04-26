@@ -1,4 +1,4 @@
-package uk.co.mattcarus.hnklogger.plugin;
+package uk.co.mattcarus.hnklogger.gui.SwingGUI.plugins;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -36,7 +36,7 @@ import com.sun.jersey.api.client.WebResource;
 
 import uk.co.mattcarus.hnklogger.HNKLoggerProperties;
 import uk.co.mattcarus.hnklogger.exceptions.HNKPropertyNotFoundException;
-import uk.co.mattcarus.hnklogger.gui.SwingGUI;
+import uk.co.mattcarus.hnklogger.gui.SwingGUI.SwingGUI;
 
 public class QRZLookup extends Plugin implements Runnable {
 	

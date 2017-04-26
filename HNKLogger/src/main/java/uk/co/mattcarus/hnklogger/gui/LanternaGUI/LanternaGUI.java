@@ -1,7 +1,8 @@
-package uk.co.mattcarus.hnklogger.gui;
+package uk.co.mattcarus.hnklogger.gui.LanternaGUI;
 
 import uk.co.mattcarus.hnklogger.HNKLogger;
 import uk.co.mattcarus.hnklogger.Log;
+import uk.co.mattcarus.hnklogger.gui.HNKLoggerGUI;
 
 import com.googlecode.lanterna.TerminalFacade;
 import com.googlecode.lanterna.gui.*;
