@@ -12,6 +12,7 @@ import uk.co.mattcarus.hnklogger.gui.*;
 import uk.co.mattcarus.hnklogger.gui.LanternaGUI.LanternaGUI;
 import uk.co.mattcarus.hnklogger.gui.SwingGUI.SwingGUI;
 import uk.co.mattcarus.hnklogger.gui.SwingGUI.plugins.*;
+import uk.co.mattcarus.hnklogger.plugins.*;
 
 import com.googlecode.lanterna.*;
 import com.googlecode.lanterna.gui.*;
@@ -85,10 +86,11 @@ public class HNKLogger {
 		
 		//hooks.add( new PostToWebAddress() );
 		hooks.add( new Clock() );
-		hooks.add( new QRZLookup() );
-		hooks.add( new AnalogueClock() );
+		//hooks.add( new QRZLookup() );
+		hooks.add( new RigCtl() );
 		
 		HNKLogger.hooks.run("init");
+		HNKLogger.hooks.run("initProperties", this.properties);
 	}
 	
 	public static void main(String[] args)

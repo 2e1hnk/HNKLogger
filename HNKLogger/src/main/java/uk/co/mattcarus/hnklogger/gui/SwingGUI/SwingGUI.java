@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
@@ -49,6 +50,8 @@ import uk.co.mattcarus.hnklogger.UppercaseDocumentFilter;
 import uk.co.mattcarus.hnklogger.Contest;
 import uk.co.mattcarus.hnklogger.contests.RsgbSsbFieldDay;
 import uk.co.mattcarus.hnklogger.gui.HNKLoggerGUI;
+import uk.co.mattcarus.hnklogger.gui.SwingGUI.plugins.GUIPlugin;
+import uk.co.mattcarus.hnklogger.plugins.Plugin;
 
 public class SwingGUI extends JFrame implements HNKLoggerGUI {
 	Log log;
@@ -63,7 +66,7 @@ public class SwingGUI extends JFrame implements HNKLoggerGUI {
 	JPanel statsPanel;
 	
 	//JTextArea historyTextArea;
-	Object columnNames[] = { "Date/Time", "Serial", "Callsign", "Rpt Sent", "Rpt Rcvd" };
+	Object columnNames[] = { "Date/Time", "Serial", "Callsign", "Rpt Sent", "Rpt Rcvd", "Band", "Mode" };
     JTable historyTable = new JTable(new DefaultTableModel(columnNames, 0));
     JScrollPane historyScrollPane;
 	
@@ -84,7 +87,7 @@ public class SwingGUI extends JFrame implements HNKLoggerGUI {
 	
 	// Menu items
 	JMenuBar menuBar;
-	JMenu fileMenu, editMenu, submenu;
+	JMenu fileMenu, editMenu, pluginsMenu, submenu;
 	JMenuItem menuItem;
 	
 	@Override
@@ -326,6 +329,13 @@ public class SwingGUI extends JFrame implements HNKLoggerGUI {
 			}	
 		};
 		
+		// Force scroll to bottom of history table when it updates
+		historyTable.addComponentListener(new ComponentAdapter() {
+		    public void componentResized(ComponentEvent e) {
+		    	historyTable.scrollRectToVisible(historyTable.getCellRect(historyTable.getRowCount()-1, 0, true));
+		    }
+		});
+		
 		fldCallsign.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), enterPress);
 		fldCallsign.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), escPress);
 		fldRptSent.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), enterPress);
@@ -431,11 +441,18 @@ public class SwingGUI extends JFrame implements HNKLoggerGUI {
 		DefaultTableModel model = (DefaultTableModel) historyTable.getModel();
 		for ( Contact contact : this.log.getContacts() )
 		{
-			model.addRow(new Object[]{ contact.getContactTimeFriendly(), contact.getSerial(), contact.getCallsign(), contact.getRptSent(), contact.getRptRcvd() });
-		}
-		JScrollBar historyVerticalScrollPane = historyScrollPane.getVerticalScrollBar();
-		historyVerticalScrollPane.setValue( historyVerticalScrollPane.getMaximum() );
-		
+			model.addRow(
+				new Object[]{
+					contact.getContactTimeFriendly(),
+					contact.getSerial(),
+					contact.getCallsign(),
+					contact.getRptSent(),
+					contact.getRptRcvd(),
+					contact.getBand(),
+					contact.getMode()
+				}
+			);
+		}		
 	}
 	
 	public void updateSerial()
@@ -571,6 +588,24 @@ public class SwingGUI extends JFrame implements HNKLoggerGUI {
 			}
 		});
 		editMenu.add(menuItem);
+		
+		// Plugins Menu
+		this.pluginsMenu = new JMenu("Plugins");
+		this.pluginsMenu.setMnemonic(KeyEvent.VK_P);
+		this.pluginsMenu.getAccessibleContext().setAccessibleDescription("Plugins Menu");
+		menuBar.add(this.pluginsMenu);
+		
+		// Add each plugin to menu
+		for ( Plugin plugin : HNKLogger.hooks)
+		{
+			menuItem = new JMenuItem(plugin.getName());
+			menuItem.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+				}
+			});
+			pluginsMenu.add(menuItem);
+		}
 		
 		this.setJMenuBar(this.menuBar);
 	}

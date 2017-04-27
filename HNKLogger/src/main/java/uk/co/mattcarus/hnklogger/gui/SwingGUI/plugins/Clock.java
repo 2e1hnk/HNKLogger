@@ -18,9 +18,12 @@ import javax.swing.text.StyledDocument;
 
 import uk.co.mattcarus.hnklogger.gui.SwingGUI.SwingGUI;
 
-public class Clock extends Plugin {
+public class Clock extends GUIPlugin {
 	public static String name = "Clock";
 	
+	public String getName() {
+		return Clock.name;
+	}
 	public void initGUI(SwingGUI gui) throws Exception {
         SwingUtilities.invokeLater(new Runnable() {
         public void run() {

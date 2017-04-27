@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import javax.swing.JFrame;
@@ -38,36 +39,45 @@ import uk.co.mattcarus.hnklogger.HNKLoggerProperties;
 import uk.co.mattcarus.hnklogger.exceptions.HNKPropertyNotFoundException;
 import uk.co.mattcarus.hnklogger.gui.SwingGUI.SwingGUI;
 
-public class QRZLookup extends Plugin implements Runnable {
+public class QRZLookup extends GUIPlugin implements Runnable {
 	
 	public String name = "QRZ.com Lookup";
 	private String identifier = "qrzlookup";
 
-	private HNKLoggerProperties properties;
+	HashMap<String, String> cache = new HashMap<String, String>();
 	
 	private String qrz_agent = "HNKLoggerV0.1";
 	private String qrz_url = "http://xmldata.qrz.com/xml/current/";
 	
 	private String sessionKey = "";
 	private Client client;
-	private String qrz_username = "2E1HNK";
-	private String qrz_password = "Suwr1sp1";
+	private String qrz_username;
+	private String qrz_password;
 
     private JFrame infoFrame;
     private JTextPane infoTextPane;
 
+    public String getName() {
+		return this.name;
+	}
+
+    public String getIdentifier() {
+		return this.identifier;
+	}
+
 	public void init()
 	{
 		this.client = Client.create();
-		this.getSessionKey();
 	}
 	
 	public void initProperties(HNKLoggerProperties properties)
 	{
-		this.properties = properties;
 		try {
-			this.qrz_username = this.properties.getProperty(this.getIdentifier() + ".username");
-			this.qrz_username = this.properties.getProperty(this.getIdentifier() + ".password");
+			this.qrz_username = properties.getProperty(this.getIdentifier() + ".username");
+			System.out.println("Set QRZ Username to " + this.qrz_username);
+			this.qrz_password = properties.getProperty(this.getIdentifier() + ".password");
+			System.out.println("Set QRZ Password to " + this.qrz_password);
+			this.getSessionKey();
 		}
 		catch (HNKPropertyNotFoundException e)
 		{
@@ -77,26 +87,41 @@ public class QRZLookup extends Plugin implements Runnable {
 	
 	public String onCallsignEntered(String callsign)
 	{
-		try {
-			String lookupUrl = this.getLookupUrl(callsign);
-			System.out.println("Processing QRZ Hook (using url: " + lookupUrl + ")");
-			WebResource webResource = client.resource(lookupUrl);
-			ClientResponse response = webResource.accept(MediaType.APPLICATION_XML_TYPE).get(ClientResponse.class);
-			
-			if (response.getStatus() != 200) {
-			   throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
-			}
-			
-			Document qrzDocument = response.getEntity(Document.class);
-			
-			System.out.println("QRZ login debug .... \n");
-			System.out.println(this.getXmlString(qrzDocument));
-			this.updateInfoWindow(qrzDocument);
-		}
-		catch (Exception e)
+		// Check if we have this callsign in the cache already
+		if ( !this.cache.containsKey(callsign) )
 		{
-			e.printStackTrace();
+			if ( this.sessionKey != null )
+			{
+				try {
+					String lookupUrl = this.getLookupUrl(callsign);
+					System.out.println("Processing QRZ Hook (using url: " + lookupUrl + ")");
+					WebResource webResource = client.resource(lookupUrl);
+					ClientResponse response = webResource.accept(MediaType.APPLICATION_XML_TYPE).get(ClientResponse.class);
+					
+					if (response.getStatus() != 200) {
+					   throw new RuntimeException("Failed : HTTP error code : " + response.getStatus());
+					}
+					
+					Document qrzDocument = response.getEntity(Document.class);
+					
+					System.out.println("QRZ login debug .... \n");
+					System.out.println(this.getXmlString(qrzDocument));
+					String info = this.qrzDocumentToString(qrzDocument);
+					this.cache.put(callsign, info);
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+			}
+			else
+			{
+				System.out.println("Not logged in to QRZ.com");
+			}
 		}
+	
+		this.updateInfoWindow(this.cache.get(callsign));
+	
 		return callsign;
 	}
 	
@@ -113,7 +138,7 @@ public class QRZLookup extends Plugin implements Runnable {
 		
 		try {
 			Document qrzLoginDocument = output;
-			System.out.println("QRZ login debug .... \n");
+			System.out.println("QRZ login debug (" + this.qrz_username + ") .... \n");
 			System.out.println(this.getXmlString(qrzLoginDocument));
 			this.sessionKey = this.getXmlValue(qrzLoginDocument, "/ns:QRZDatabase/ns:Session/ns:Key/text()");
 			System.out.println("QRZ Session Key: " + this.sessionKey);
@@ -227,7 +252,7 @@ public class QRZLookup extends Plugin implements Runnable {
 		infoFrame.pack();
 	}
 
-	private void updateInfoWindow(Document qrzDocument) throws XPathException
+	private String qrzDocumentToString(Document qrzDocument) throws XPathException
 	{
 		StringBuilder sb = new StringBuilder();
 		sb.append(this.getXmlValue(qrzDocument, "/ns:QRZDatabase/ns:Callsign/ns:fname/text()"));
@@ -240,6 +265,6 @@ public class QRZLookup extends Plugin implements Runnable {
 		sb.append(", ");
 		sb.append(this.getXmlValue(qrzDocument, "/ns:QRZDatabase/ns:Callsign/ns:country/text()"));
 		
-		this.updateInfoWindow(sb.toString());
+		return sb.toString();
 	}
 }

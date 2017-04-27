@@ -16,7 +16,7 @@ import uk.co.mattcarus.hnklogger.HNKLoggerProperties;
 import uk.co.mattcarus.hnklogger.exceptions.HNKPropertyNotFoundException;
 import uk.co.mattcarus.hnklogger.gui.SwingGUI.SwingGUI;
 
-public class AnalogueClock extends Plugin {
+public class AnalogueClock extends GUIPlugin {
 	public static String name = "Analogue Clock";
 	public static String identifier = "analogueclock";
 	
