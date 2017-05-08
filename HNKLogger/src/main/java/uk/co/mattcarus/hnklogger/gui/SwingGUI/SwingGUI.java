@@ -1,5 +1,6 @@
 package uk.co.mattcarus.hnklogger.gui.SwingGUI;
 
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -12,8 +13,11 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Timer;
@@ -22,6 +26,7 @@ import java.util.TimerTask;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -52,6 +57,7 @@ import uk.co.mattcarus.hnklogger.contests.RsgbSsbFieldDay;
 import uk.co.mattcarus.hnklogger.gui.HNKLoggerGUI;
 import uk.co.mattcarus.hnklogger.gui.SwingGUI.plugins.GUIPlugin;
 import uk.co.mattcarus.hnklogger.plugins.Plugin;
+import uk.co.mattcarus.hnklogger.plugins.PluginDefinition;
 
 public class SwingGUI extends JFrame implements HNKLoggerGUI {
 	Log log;
@@ -248,7 +254,7 @@ public class SwingGUI extends JFrame implements HNKLoggerGUI {
 				// Trigger Plugins
 				if ( !e.isTemporary() && !fldCallsign.equals("") ) {
 					System.out.println("Running onCallsignEntered Hook with: " + fldCallsign.getText());
-					HNKLogger.hooks.run("onCallsignEntered", fldCallsign.getText());
+					HNKLogger.pluginRegistry.run("onCallsignEntered", fldCallsign.getText());
 				}
 			}
 			
@@ -519,6 +525,7 @@ public class SwingGUI extends JFrame implements HNKLoggerGUI {
 	private void createMenus()
 	{
 		this.menuBar = new JMenuBar();
+		JCheckBoxMenuItem checkboxMenuItem;
 		
 		// File Menu
 		this.fileMenu = new JMenu("File");
@@ -596,15 +603,26 @@ public class SwingGUI extends JFrame implements HNKLoggerGUI {
 		menuBar.add(this.pluginsMenu);
 		
 		// Add each plugin to menu
-		for ( Plugin plugin : HNKLogger.hooks)
+		for ( final PluginDefinition pluginDefinition : HNKLogger.pluginRegistry )
 		{
-			menuItem = new JMenuItem(plugin.getName());
-			menuItem.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
+			checkboxMenuItem = new JCheckBoxMenuItem(((Plugin) pluginDefinition.getPluginObject()).getName(), pluginDefinition.isEnabled());
+
+			checkboxMenuItem.addItemListener(new ItemListener() {
+		        @Override
+				public void itemStateChanged(ItemEvent e) {
+		        	if ( ((JCheckBoxMenuItem) e.getSource()).getState() ) {
+		        		pluginDefinition.setEnabled(true);
+		        		((Plugin) pluginDefinition.getPluginObject()).init();
+		        		if ( Arrays.asList( ((Plugin) pluginDefinition.getPluginObject()).getCapabilities() ).contains(Plugin.CAPABILITY_GUI) )
+		        		{
+		        			System.out.println("Plugin is GUI-type");
+		        			((GUIPlugin) pluginDefinition.getPluginObject()).initGUI(HNKLogger.getHNKLoggerGUI());
+		        		}
+		        	}
 				}
-			});
-			pluginsMenu.add(menuItem);
+		       });
+
+			pluginsMenu.add(checkboxMenuItem);
 		}
 		
 		this.setJMenuBar(this.menuBar);

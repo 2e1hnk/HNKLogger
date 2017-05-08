@@ -17,13 +17,26 @@ import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
 import uk.co.mattcarus.hnklogger.gui.SwingGUI.SwingGUI;
+import uk.co.mattcarus.hnklogger.plugins.Plugin;
 
 public class Clock extends GUIPlugin {
 	public static String name = "Clock";
+	public static String identifier = "clock";
+
+	private static final Integer[] capabilities = { Plugin.CAPABILITY_GUI };
 	
+	public Integer[] getCapabilities() {
+		return Clock.capabilities;
+	}
+
 	public String getName() {
 		return Clock.name;
 	}
+	
+	public String getIdentifier() {
+		return Clock.identifier;
+	}
+	
 	public void initGUI(SwingGUI gui) throws Exception {
         SwingUtilities.invokeLater(new Runnable() {
         public void run() {

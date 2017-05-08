@@ -7,5 +7,5 @@ public abstract class GUIPlugin extends Plugin {
 	public void initGUI(HNKLoggerGUI gui)
 	{
 		
-	}	
+	}
 }

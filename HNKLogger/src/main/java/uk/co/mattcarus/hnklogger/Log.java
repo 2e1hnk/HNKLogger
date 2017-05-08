@@ -91,7 +91,7 @@ public class Log {
 	
 	public void addContact(Contact contact)
 	{
-		HNKLogger.hooks.run("onBeforeLogContact", contact);
+		HNKLogger.pluginRegistry.run("onBeforeLogContact", contact);
 		
 		
 		this.contacts.add(contact);

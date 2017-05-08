@@ -19,11 +19,15 @@ import com.googlecode.lanterna.gui.*;
 
 public class HNKLogger {
 	HNKLoggerProperties properties;
+	static HNKLoggerGUI gui;
 	Log log;
 	int nextSerial = 0;
 	public static LoggerResource loggerResource;
 	
-	public static ObjectList<Plugin> hooks;
+	
+	//public static ObjectList<Plugin> hooks;
+	
+	public static PluginRegistry<Plugin> pluginRegistry;
 	
 	
 	public HNKLogger()
@@ -44,12 +48,13 @@ public class HNKLogger {
 		
 		
 		this.loadResources();
-		this.loadHooks();
+		//this.loadHooks();
+		this.loadPlugins();
 
 		this.log = new Log();
 		this.nextSerial = this.log.getNextSerialNumber();
 		
-		HNKLoggerGUI gui;
+		
 		
 		try {
 			if ( properties.getProperty("gui.interface_type").equals("LanternaGUI") )
@@ -68,8 +73,11 @@ public class HNKLogger {
 		}
 		
 		this.loadGUI(gui);
-		HNKLogger.hooks.run("initProperties", properties);
-		HNKLogger.hooks.run("initGUI", gui);
+		//HNKLogger.hooks.run("initProperties", properties);
+		HNKLogger.pluginRegistry.run("initProperties", properties, true);
+		
+		//HNKLogger.hooks.run("initGUI", gui);
+		HNKLogger.pluginRegistry.run("initGUI", gui);
 		
 		System.out.println(loggerResource.search("M0SPF").get("country"));
 		
@@ -80,6 +88,7 @@ public class HNKLogger {
 		gui.startGUI(this.log);
 	}
 	
+	/*
 	public void loadHooks()
 	{
 		hooks = new ObjectList<Plugin>();
@@ -91,6 +100,21 @@ public class HNKLogger {
 		
 		HNKLogger.hooks.run("init");
 		HNKLogger.hooks.run("initProperties", this.properties);
+	}
+	*/
+	
+	public void loadPlugins()
+	{
+		pluginRegistry = new PluginRegistry<Plugin>();
+		
+		pluginRegistry.add( new PostToWebAddress(), 1000, false );
+		pluginRegistry.add( new Clock(),            1000, true  );
+		pluginRegistry.add( new AnalogueClock(),    1000, false );
+		pluginRegistry.add( new QRZLookup(),        500,  false );
+		pluginRegistry.add( new RigCtl(),           1,    false );
+		
+		HNKLogger.pluginRegistry.run("init", true);
+		HNKLogger.pluginRegistry.run("initProperties", this.properties, true);
 	}
 	
 	public static void main(String[] args)
@@ -104,5 +128,10 @@ public class HNKLogger {
 	public void loadResources()
 	{
 		loggerResource = new CSVLoggerResource("cqwwpre3.txt");
+	}
+	
+	public static HNKLoggerGUI getHNKLoggerGUI()
+	{
+		return gui;
 	}
 }

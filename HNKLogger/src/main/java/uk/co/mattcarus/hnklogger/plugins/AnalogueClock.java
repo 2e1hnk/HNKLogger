@@ -1,4 +1,4 @@
-package uk.co.mattcarus.hnklogger.gui.SwingGUI.plugins;
+package uk.co.mattcarus.hnklogger.plugins;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -16,14 +16,20 @@ import uk.co.mattcarus.hnklogger.HNKLoggerProperties;
 import uk.co.mattcarus.hnklogger.exceptions.HNKPropertyNotFoundException;
 import uk.co.mattcarus.hnklogger.gui.SwingGUI.SwingGUI;
 
-public class AnalogueClock extends GUIPlugin {
+public class AnalogueClock extends Plugin {
 	public static String name = "Analogue Clock";
-	public static String identifier = "analogueclock";
+	public static String identifier = "analogueClock";
 	
 	private HNKLoggerProperties properties;
 	
 	private Color BACKGROUND_COLOR; 
 	private static JFrame analogueClockFrame;
+	
+	private static final Integer[] capabilities = { Plugin.CAPABILITY_GUI };
+	
+	public Integer[] getCapabilities() {
+		return AnalogueClock.capabilities;
+	}
 	
 	public String getName() {
 		return AnalogueClock.name;
@@ -45,7 +51,8 @@ public class AnalogueClock extends GUIPlugin {
 		}
 	}
 	
-	public void initGUI(SwingGUI gui) throws Exception {
+	public void init() {
+		System.out.println("running init() for AnalogueClock");
 		AnalogueClock.analogueClockFrame = new JFrame(this.getName());
 		AnalogueClockPanel container = new AnalogueClockPanel();
 		analogueClockFrame.add(container, BorderLayout.CENTER);
@@ -55,6 +62,11 @@ public class AnalogueClock extends GUIPlugin {
 	    // setUndecorated(true);
 		analogueClockFrame.pack();
 		analogueClockFrame.setVisible(true);
+	}
+
+	@Override
+	public String getIdentifier() {
+		return this.identifier;
 	}
 }
 

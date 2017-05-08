@@ -1,4 +1,4 @@
-package uk.co.mattcarus.hnklogger.gui.SwingGUI.plugins;
+package uk.co.mattcarus.hnklogger.plugins;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -39,7 +39,7 @@ import uk.co.mattcarus.hnklogger.HNKLoggerProperties;
 import uk.co.mattcarus.hnklogger.exceptions.HNKPropertyNotFoundException;
 import uk.co.mattcarus.hnklogger.gui.SwingGUI.SwingGUI;
 
-public class QRZLookup extends GUIPlugin implements Runnable {
+public class QRZLookup extends Plugin implements Runnable {
 	
 	public String name = "QRZ.com Lookup";
 	private String identifier = "qrzlookup";
@@ -57,19 +57,24 @@ public class QRZLookup extends GUIPlugin implements Runnable {
     private JFrame infoFrame;
     private JTextPane infoTextPane;
 
-    public String getName() {
+	private static final Integer[] capabilities = { Plugin.CAPABILITY_GUI };
+	
+	public Integer[] getCapabilities() {
+		return QRZLookup.capabilities;
+	}
+	
+	public String getName() {
 		return this.name;
 	}
 
     public String getIdentifier() {
 		return this.identifier;
 	}
+    
+    public QRZLookup() {
+    	this.client = Client.create();
+    }
 
-	public void init()
-	{
-		this.client = Client.create();
-	}
-	
 	public void initProperties(HNKLoggerProperties properties)
 	{
 		try {
@@ -223,8 +228,8 @@ public class QRZLookup extends GUIPlugin implements Runnable {
 
     }
     
-	public void initGUI(SwingGUI gui) {
-        SwingUtilities.invokeLater(this);
+	public void init() {
+		SwingUtilities.invokeLater(this);
 	}
 
 

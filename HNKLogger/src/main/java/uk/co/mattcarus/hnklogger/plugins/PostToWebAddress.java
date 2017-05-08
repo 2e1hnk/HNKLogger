@@ -1,25 +1,39 @@
-package uk.co.mattcarus.hnklogger.gui.SwingGUI.plugins;
+package uk.co.mattcarus.hnklogger.plugins;
 
 import java.io.BufferedReader;
 import uk.co.mattcarus.hnklogger.gui.HNKLoggerGUI;
+import uk.co.mattcarus.hnklogger.gui.SwingGUI.plugins.GUIPlugin;
+
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 
+import com.jcabi.aspects.Async;
+
 import uk.co.mattcarus.hnklogger.Contact;
 
-public class PostToWebAddress extends GUIPlugin {
+public class PostToWebAddress extends Plugin {
 	
-	public String name = "change me";
+	public String name = "Post to Web Address";
+	public String identifier = "postToWebAddress";
 	
 	private final String USER_AGENT = "Mozilla/5.0";
 	private String baseUrl = "http://192.168.1.8";
 	
+	private static final Integer[] capabilities = { };
+	
+	public Integer[] getCapabilities() {
+		return PostToWebAddress.capabilities;
+	}
+	
 	@Override
+	@Async
 	public Contact onBeforeLogContact(Contact contact)
 	{
+		System.out.println("Running onBeforeLogContact() for PostToWebAddress plugin");
+		
 		try {
 			this.sendGet(this.baseUrl);
 		} catch (Exception e) {
@@ -110,6 +124,17 @@ public class PostToWebAddress extends GUIPlugin {
 
 	}
 	
-	public void initGUI(HNKLoggerGUI gui) {
+	public void init() {
+		System.out.println("loaded post to web plugin");
+	}
+
+	@Override
+	public String getName() {
+		return this.name;
+	}
+
+	@Override
+	public String getIdentifier() {
+		return this.identifier;
 	}
 }

@@ -1,8 +1,15 @@
 <contest>
 <contestInformation>
-	<contestName></contestName>
-	<rulesUrl></rulesUrl>
+	<contestName>RSGB HF SSB Field Day</contestName>
+	<rulesUrl>http://www.rsgbcc.org/hf/rules/2016/rssbfd.shtml</rulesUrl>
 </contestInformation>
+<exchange>
+	<format>
+		<field name="callsign" validation="[[a-zA-Z0-9]*\/]?\d?[a-zA-Z]{1,2}\d{1,4}[a-zA-Z]{1,4}[\/[a-zA-Z0-9]*]?" validationAction="warn" direction="send,receive" />
+		<field name="RS" validation="[1-5][1-9][1-9]?" validationAction="reject" direction="send,receive" />
+		<field name="Serial" validation="\d" validationAction="warn" direction="send,receive" />
+	</format>
+</exchange>
 <scoring>
 	<contact>
 		<rule post="stop">
