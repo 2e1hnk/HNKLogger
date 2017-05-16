@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.util.Properties;
 
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import uk.co.mattcarus.hnklogger.exceptions.HNKPropertyNotFoundException;
 import uk.co.mattcarus.hnklogger.gui.*;
@@ -119,6 +121,12 @@ public class HNKLogger {
 	
 	public static void main(String[] args)
 	{
+		try {
+			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
+				| UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
+		}
 		HNKLogger hnkLogger = new HNKLogger();
 		//HNKLoggerGUI gui = new LanternaGUI();
 		//hnkLogger.loadGUI(gui);
