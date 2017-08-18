@@ -23,6 +23,12 @@ import uk.co.mattcarus.hnklogger.Contact;
 import uk.co.mattcarus.hnklogger.HNKLoggerProperties;
 import uk.co.mattcarus.hnklogger.exceptions.HNKPropertyNotFoundException;
 
+/**
+ * Taken from https://github.com/kd7uiy/trusted-qsl
+ * 
+ * @author macarus
+ *
+ */
 public class LotwSubmit extends Plugin {
 
 	public static String name = "Logbook-of-the-World Plugin";
@@ -59,7 +65,7 @@ public class LotwSubmit extends Plugin {
 	}
 	
 	public void init() {
-		System.out.println("running init() for " + this.getIdentifier()));
+		System.out.println("running init() for " + this.getIdentifier());
 	}
 
 	public Contact onAfterLogContact(Contact contact)
