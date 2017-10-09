@@ -43,10 +43,10 @@ import uk.co.mattcarus.hnklogger.HNKLoggerProperties;
 import uk.co.mattcarus.hnklogger.exceptions.HNKPropertyNotFoundException;
 import uk.co.mattcarus.hnklogger.gui.SwingGUI.SwingGUI;
 
-public class QRZLookup extends Plugin implements Runnable {
+public class SolarData extends Plugin implements Runnable {
 	
-	public String name = "QRZ.com Lookup";
-	private String identifier = "qrzlookup";
+	public String name = "NOAA Solar Data";
+	private String identifier = "solardata";
 
 	HashMap<String, String> cache = new HashMap<String, String>();
 	
@@ -64,7 +64,7 @@ public class QRZLookup extends Plugin implements Runnable {
 	private static final Integer[] capabilities = { Plugin.CAPABILITY_GUI };
 	
 	public Integer[] getCapabilities() {
-		return QRZLookup.capabilities;
+		return SolarData.capabilities;
 	}
 	
 	public String getName() {
@@ -75,7 +75,7 @@ public class QRZLookup extends Plugin implements Runnable {
 		return this.identifier;
 	}
     
-    public QRZLookup() {
+    public SolarData() {
     	this.client = Client.create();
     }
 
